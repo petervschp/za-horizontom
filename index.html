@@ -4,14 +4,52 @@
 #dialog{z-index:20}#menu,#ending{z-index:10}#hud,#controls,#near,#notice{z-index:5}#vignette{z-index:1}
 
 #menuFeedback{font-size:14px} #endFeedback{display:block} @media(max-height:500px){#menu .menu-inner,#ending .menu-inner{max-height:none}}
+
+/* v0.2.2 – compact landscape overlays; retain portrait and desktop layout. */
+.screen-copy,.screen-actions{display:contents}
+.landscape-note{display:none}
+@media (orientation:landscape) and (max-height:600px) and (min-width:480px){
+  #menu,#ending{justify-content:center;align-items:center;padding:max(12px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:linear-gradient(90deg,#101e26eb,#14252bce 65%,#122329a0)}
+  #menu .menu-inner,#ending .menu-inner{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:center;gap:clamp(16px,4vw,48px);width:min(100%,960px);margin:auto;padding:0;max-height:none}
+  .screen-copy,.screen-actions{display:block;min-width:0}
+  .screen-copy p{max-width:48ch;margin:8px 0;line-height:1.4;font-size:14px}
+  #menu h1{font-size:clamp(32px,6.7vw,67px);line-height:.92;margin:10px 0}
+  #menu .subtitle{font-size:clamp(17px,2.8vw,24px);line-height:1.2;margin:0 0 10px}
+  .screen-copy .fine,.screen-actions .fine{font-size:12px;line-height:1.4;color:var(--muted)}
+  .portrait-note{display:none}.landscape-note{display:block}
+  .menu-actions{width:100%;margin:0 0 10px;gap:7px}
+  .menu-actions button,#ending button{font-size:14px;line-height:1.25;min-height:44px;padding:9px 12px;white-space:normal;text-align:left}
+  .settings{gap:6px 12px;font-size:12px;line-height:1.45}
+  .settings label{display:flex;align-items:center;gap:4px;min-height:26px}
+  .settings input{margin:0}
+  #ending h1{font-size:clamp(32px,5.8vw,64px);line-height:1.02;margin:8px 0 12px}
+  #ending .screen-actions{display:grid;gap:7px}
+  #ending .screen-actions p{margin:0 0 3px}
+  #ending button{width:100%;margin:0}
+  .quiet #ending .screen-copy p{display:none}
+  .quiet #ending .screen-actions p{display:none}
+  #menu .menu-inner,#ending .menu-inner{scroll-margin:12px}
+}
+@media (orientation:landscape) and (max-height:340px) and (min-width:480px){
+  #menu h1{font-size:clamp(31px,6.1vw,48px);margin:5px 0 7px}
+  #menu .subtitle{font-size:17px;margin-bottom:5px}
+  .screen-copy p{font-size:13px;line-height:1.35;margin:5px 0}
+  .screen-copy .fine{font-size:11.5px;line-height:1.35}
+  #ending h1{font-size:clamp(30px,5.4vw,46px);margin:5px 0 8px}
+  .menu-actions{gap:5px;margin-bottom:6px}
+  #ending .screen-actions{gap:5px}
+}
+@media (orientation:portrait) { .screen-copy>p:not(.subtitle),.portrait-note{max-width:36ch} }
+@media (orientation:landscape) and (min-height:601px), (orientation:landscape) and (max-width:479px){.screen-copy>p:not(.subtitle),.portrait-note{max-width:36ch}}
+@media(max-height:500px){.portrait-note,.screen-copy>p{margin:6px 0}}
 </style></head><body>
 <main id="app"><canvas id="world" aria-label="Herná krajina. Pohyb šípkami, interakcia klávesom E alebo tlačidlom."></canvas><div id="vignette"></div>
 <header id="hud" hidden><div><div class="eyebrow" id="chapter"></div><div id="objective" aria-live="polite"></div></div><div class="tools"><button id="sound" aria-label="Zapnúť zvuk" title="Zvuk">♫ <span>Vyp.</span></button><button id="help" aria-label="Pomoc a pauza">?</button></div></header>
 <div id="notice" role="status" aria-live="polite" hidden></div><div id="near" hidden><span id="nearName"></span><button id="act">Preskúmať <kbd>E</kbd></button></div>
 <div id="controls" hidden><div class="dpad" aria-label="Smerové ovládanie"><button data-dir="up" aria-label="Hore">↑</button><button data-dir="left" aria-label="Vľavo">←</button><button data-dir="down" aria-label="Dole">↓</button><button data-dir="right" aria-label="Vpravo">→</button></div><div class="controlhint">Ťukni na cestu alebo použi šípky.<br>Priblíž sa k označenému miestu.</div><button id="hint" class="secondary">Nápoveda</button></div>
 <div id="dialog" hidden role="dialog" aria-modal="true" aria-labelledby="dialogTitle"><div class="panel"><div class="eyebrow" id="dialogKicker"></div><h2 id="dialogTitle"></h2><div id="dialogText"></div><div id="dialogButtons"></div></div></div>
-<section id="menu"><div class="menu-inner"><div class="eyebrow">Dobrovoľné skúšanie · v0.2.1</div><h1>ZA<br>HORIZONTOM<span>.</span></h1><p class="subtitle">Keď svetlo nestačí</p><p>V horách zhasínajú orientačné svetlá. Cesta pokračuje aj tam, kam zatiaľ nedovidíš.</p><div class="menu-actions"><button id="soloStart" class="primary">Hrať sám / sama <span>→</span></button><button id="coopStart" class="secondary">Tri svetlá · skupina troch</button><button id="menuFeedback" class="secondary">Spätná väzba (aj bez dokončenia)</button></div><div class="settings"><label><input type="checkbox" id="audioPref"> Zvuk</label><label><input type="checkbox" id="motionPref"> Menej pohybu</label><label><input type="checkbox" id="brightPref"> Svetlejšia krajina</label></div><p class="fine">Máš len pár minút? Skús individuálnu hru. Ak ste traja, môžete si rozdeliť roly. Po skúšaní prosíme o krátke hodnotenie, aj keď hru nedokončíš. Bez účtu a bez bodovania.</p></div></section>
-<section id="ending" hidden><div class="menu-inner"><div class="eyebrow" id="endKicker"></div><h1 id="endTitle"></h1><p id="endText"></p><p id="endDetail" class="fine"></p><p class="fine">Stačí krátke hodnotenie toho, čo si stihol/stihla zažiť.</p><button id="endFeedback" class="primary">Poskytnúť spätnú väzbu</button><button id="endQuiet" class="secondary">Chvíľa ticha (voliteľné)</button><button id="endMenu" class="secondary">Späť na začiatok</button></div></section>
+<section id="menu"><div class="menu-inner"><div class="screen-copy"><div class="eyebrow">Dobrovoľné skúšanie · v0.2.2</div><h1>ZA<br>HORIZONTOM<span>.</span></h1><p class="subtitle">Keď svetlo nestačí</p><p>V horách zhasínajú orientačné svetlá. Cesta pokračuje aj tam, kam zatiaľ nedovidíš.</p><p class="fine landscape-note">Máš len pár minút? Skús individuálnu hru. Ak ste traja, môžete si rozdeliť roly. Po skúšaní prosíme o krátke hodnotenie, aj keď hru nedokončíš. Bez účtu a bez bodovania.</p></div><div class="screen-actions"><div class="menu-actions"><button id="soloStart" class="primary">Hrať sám / sama <span>→</span></button><button id="coopStart" class="secondary">Tri svetlá · skupina troch</button><button id="menuFeedback" class="secondary">Spätná väzba (aj bez dokončenia)</button></div><div class="settings"><label><input type="checkbox" id="audioPref"> Zvuk</label><label><input type="checkbox" id="motionPref"> Menej pohybu</label><label><input type="checkbox" id="brightPref"> Svetlejšia krajina</label></div></div><p class="fine portrait-note">Máš len pár minút? Skús individuálnu hru. Ak ste traja, môžete si rozdeliť roly. Po skúšaní prosíme o krátke hodnotenie, aj keď hru nedokončíš. Bez účtu a bez bodovania.</p></div></section>
+<section id="ending" hidden><div class="menu-inner"><div class="screen-copy"><div class="eyebrow" id="endKicker"></div><h1 id="endTitle"></h1><p id="endText"></p><p id="endDetail" class="fine"></p></div><div class="screen-actions"><p class="fine">Stačí krátke hodnotenie toho, čo si stihol/stihla zažiť.</p><button id="endFeedback" class="primary">Poskytnúť spätnú väzbu</button><button id="endQuiet" class="secondary">Chvíľa ticha (voliteľné)</button><button id="endMenu" class="secondary">Späť na začiatok</button></div></div></section>
 </main><noscript>Na spustenie hry povoľ JavaScript.</noscript><script>const W=1500,H=850;
 const scenes={
  station:{name:'01 / Stanica',palette:['#8d9c9d','#e1b98b','#50696b','#263e43'],start:[220,570],goal:'Preskúmaj stanicu. Nájdi lampáš a cestu k pozorovateľni.',hint:'Lampáš je pri lavičke, mapa pri nástenke. Cesta pokračuje vpravo.',paths:[[[80,580],[350,580],[680,535],[990,540],[1450,480]],[[480,560],[480,370]]],objects:[['lamp',420,570,'Lampáš','lantern'],['map',640,500,'Nástenka','sign'],['exit',1370,480,'Lesná cesta','gate']],props:[['station',430,350],['bench',390,630],['rail',750,255],['tower',1290,265]]},
